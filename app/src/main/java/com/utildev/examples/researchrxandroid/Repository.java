@@ -10,6 +10,9 @@ import java.util.concurrent.TimeoutException;
 
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class Repository {
     private static Repository instance;
@@ -21,8 +24,25 @@ public class Repository {
         return instance;
     }
 
+    public void getApi() {
+        Call<ResponseBody> call = ServiceGenerator.getRequestApi().makeObservableQuery1();
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+
+            }
+        });
+    }
+
     public Future<Observable<ResponseBody>> makeFutureQuery() {
         final ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        // create thread
         final Callable<Observable<ResponseBody>> myNetworkCallable = new Callable<Observable<ResponseBody>>() {
             @Override
             public Observable<ResponseBody> call() throws Exception {
@@ -30,8 +50,7 @@ public class Repository {
             }
         };
 
-
-        final Future<Observable<ResponseBody>> futureObservable = new Future<Observable<ResponseBody>>() {
+        return new Future<Observable<ResponseBody>>() {
 
             @Override
             public boolean cancel(boolean mayInterruptIfRunning) {
@@ -61,8 +80,6 @@ public class Repository {
                 return executor.submit(myNetworkCallable).get(timeout, unit);
             }
         };
-
-        return futureObservable;
 
     }
 }

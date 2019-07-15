@@ -11,6 +11,10 @@ import org.reactivestreams.Subscription;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Flowable;
@@ -352,6 +356,15 @@ public class MainActivity extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+//        Calculator c1 = new Calculator(1, 2);
+//        Calculator c2 = new Calculator(3, 4);
+//        Calculator c3 = new Calculator(7, 5);
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        Future<Integer> f1 = executorService.submit(c1);
+//        Future<Integer> f2 = executorService.submit(c2);
+//        Future<Integer> f3 = executorService.submit(c3);
+//        executorService.shutdown();
 
     }
 }
