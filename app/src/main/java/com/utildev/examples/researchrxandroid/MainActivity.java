@@ -1,7 +1,6 @@
 package com.utildev.examples.researchrxandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import io.reactivex.FlowableSubscriber;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
@@ -357,14 +357,47 @@ public class MainActivity extends AppCompatActivity {
 //            e.printStackTrace();
 //        }
 
-        viewModel.makeReactiveQuery().observe(this, new Observer<ResponseBody>() {
+//        viewModel.makeReactiveQuery().observe(this, new Observer<ResponseBody>() {
+//            @Override
+//            public void onChanged(ResponseBody responseBody) {
+//                try {
+//                    Log.d(TAG, "onNext: " + responseBody.string());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+
+        Observable<Task> taskObservable = Observable
+                .fromIterable(DataSource.createTaskList())
+                .distinct(new Function<Task, Integer>() {
+                    @Override
+                    public Integer apply(Task task) throws Exception {
+                        return task.getPriority();
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+
+        taskObservable.subscribe(new Observer<Task>() {
             @Override
-            public void onChanged(ResponseBody responseBody) {
-                try {
-                    Log.d(TAG, "onNext: " + responseBody.string());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(Task task) {
+                Log.d(TAG, "onNext: " + task.getDescription());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
             }
         });
 

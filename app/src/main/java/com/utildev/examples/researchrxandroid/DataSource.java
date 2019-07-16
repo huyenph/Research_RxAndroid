@@ -16,6 +16,7 @@ class DataSource {
         tasks.add(new Task("Task 8", false, 7));
         tasks.add(new Task("Task 9", true, 8));
         tasks.add(new Task("Task 10", false, 9));
+        tasks.add(new Task("Task 10", false, 9));
         return tasks;
     }
 }
