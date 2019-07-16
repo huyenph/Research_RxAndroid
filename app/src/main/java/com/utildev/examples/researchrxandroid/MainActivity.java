@@ -1,6 +1,7 @@
 package com.utildev.examples.researchrxandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -22,7 +23,6 @@ import io.reactivex.FlowableSubscriber;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
@@ -322,40 +322,51 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
-        try {
-            viewModel.makeFutureQuery().get()
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<ResponseBody>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-                            Log.d(TAG, "onSubscribe: ");
-                        }
+//        try {
+//            viewModel.makeFutureQuery().get()
+//                    .subscribeOn(Schedulers.io())
+//                    .observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(new Observer<ResponseBody>() {
+//                        @Override
+//                        public void onSubscribe(Disposable d) {
+//                            Log.d(TAG, "onSubscribe: ");
+//                        }
+//
+//                        @Override
+//                        public void onNext(ResponseBody responseBody) {
+//                            try {
+//                                Log.d(TAG, "onNext: " + responseBody.string());
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void onError(Throwable e) {
+//                            Log.d(TAG, "onError: " + e.getMessage());
+//                        }
+//
+//                        @Override
+//                        public void onComplete() {
+//                            Log.d(TAG, "onComplete: ");
+//                        }
+//                    });
+//        } catch (ExecutionException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
-                        @Override
-                        public void onNext(ResponseBody responseBody) {
-                            try {
-                                Log.d(TAG, "onNext: " + responseBody.string());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Log.d(TAG, "onError: " + e.getMessage());
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            Log.d(TAG, "onComplete: ");
-                        }
-                    });
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        viewModel.makeReactiveQuery().observe(this, new Observer<ResponseBody>() {
+            @Override
+            public void onChanged(ResponseBody responseBody) {
+                try {
+                    Log.d(TAG, "onNext: " + responseBody.string());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 //        Calculator c1 = new Calculator(1, 2);
 //        Calculator c2 = new Calculator(3, 4);

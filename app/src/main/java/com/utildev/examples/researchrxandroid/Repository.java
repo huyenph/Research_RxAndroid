@@ -1,5 +1,8 @@
 package com.utildev.examples.researchrxandroid;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -9,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -80,6 +85,10 @@ public class Repository {
                 return executor.submit(myNetworkCallable).get(timeout, unit);
             }
         };
+    }
 
+    public LiveData<ResponseBody> makeReactiveQuery() {
+        return LiveDataReactiveStreams.fromPublisher(ServiceGenerator.getRequestApi().makeReactiveQuery()
+                .subscribeOn(Schedulers.io()));
     }
 }
