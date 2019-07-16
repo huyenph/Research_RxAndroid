@@ -368,18 +368,53 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        Observable<Task> taskObservable = Observable
+        // Distinct
+//        Observable<Task> taskObservable = Observable
+//                .fromIterable(DataSource.createTaskList())
+//                .distinct(new Function<Task, Integer>() {
+//                    @Override
+//                    public Integer apply(Task task) throws Exception {
+//                        return task.getPriority();
+//                    }
+//                })
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread());
+//
+//        taskObservable.subscribe(new Observer<Task>() {
+//            @Override
+//            public void onSubscribe(Disposable d) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(Task task) {
+//                Log.d(TAG, "onNext: " + task.getDescription());
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//
+//            }
+//        });
+
+        Observable<Task> observable = Observable
                 .fromIterable(DataSource.createTaskList())
-                .distinct(new Function<Task, Integer>() {
+                .takeWhile(new Predicate<Task>() {
                     @Override
-                    public Integer apply(Task task) throws Exception {
-                        return task.getPriority();
+                    public boolean test(Task task) throws Exception {
+                        Log.d(TAG, "test: " + task.getDescription());
+                        return task.isComplete();
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 
-        taskObservable.subscribe(new Observer<Task>() {
+        observable.subscribe(new Observer<Task>() {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -392,23 +427,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Throwable e) {
-
+                Log.d(TAG, "onError: ");
             }
 
             @Override
             public void onComplete() {
-
+                Log.d(TAG, "onComplete: ");
             }
         });
-
-//        Calculator c1 = new Calculator(1, 2);
-//        Calculator c2 = new Calculator(3, 4);
-//        Calculator c3 = new Calculator(7, 5);
-//        ExecutorService executorService = Executors.newSingleThreadExecutor();
-//        Future<Integer> f1 = executorService.submit(c1);
-//        Future<Integer> f2 = executorService.submit(c2);
-//        Future<Integer> f3 = executorService.submit(c3);
-//        executorService.shutdown();
 
     }
 }

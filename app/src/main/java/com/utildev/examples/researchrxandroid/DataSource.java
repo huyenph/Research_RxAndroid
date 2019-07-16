@@ -7,7 +7,7 @@ class DataSource {
     static List<Task> createTaskList() {
         List<Task> tasks = new ArrayList<>();
         tasks.add(new Task("Task 1", true, 0));
-        tasks.add(new Task("Task 2", false, 1));
+        tasks.add(new Task("Task 2", true, 1));
         tasks.add(new Task("Task 3", true, 2));
         tasks.add(new Task("Task 4", false, 3));
         tasks.add(new Task("Task 5", true, 4));
