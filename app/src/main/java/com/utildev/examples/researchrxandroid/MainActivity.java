@@ -402,39 +402,105 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
+//        Observable<Task> observable = Observable
+//                .fromIterable(DataSource.createTaskList())
+//                .takeWhile(new Predicate<Task>() {
+//                    @Override
+//                    public boolean test(Task task) throws Exception {
+//                        Log.d(TAG, "test: " + task.getDescription());
+//                        return task.isComplete();
+//                    }
+//                })
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread());
+//
+//        observable.subscribe(new Observer<Task>() {
+//            @Override
+//            public void onSubscribe(Disposable d) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(Task task) {
+//                Log.d(TAG, "onNext: " + task.getDescription());
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//                Log.d(TAG, "onError: ");
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//                Log.d(TAG, "onComplete: ");
+//            }
+//        });
+
+        // Map
+//        Observable.fromIterable(DataSource.createTaskList())
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .map(new Function<Task, Task>() {
+//                    @Override
+//                    public Task apply(Task task) throws Exception {
+//                        Log.d(TAG, "apply: " + task.getDescription() + " - " + task.isComplete());
+//                        task.setComplete(true);
+//                        return task;
+//                    }
+//                })
+//                .subscribe(new Observer<Task>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onNext(Task task) {
+//                        Log.d(TAG, "onNext: " + task.getDescription() + " - " + task.isComplete());
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+
+        // Buffer
         Observable<Task> observable = Observable
                 .fromIterable(DataSource.createTaskList())
-                .takeWhile(new Predicate<Task>() {
+                .subscribeOn(Schedulers.io());
+
+        observable.buffer(3)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<Task>>() {
                     @Override
-                    public boolean test(Task task) throws Exception {
-                        Log.d(TAG, "test: " + task.getDescription());
-                        return task.isComplete();
+                    public void onSubscribe(Disposable d) {
+
                     }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
 
-        observable.subscribe(new Observer<Task>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+                    @Override
+                    public void onNext(List<Task> tasks) {
+                        Log.d(TAG, "onNext: result");
+                        for (Task task : tasks) {
+                            Log.d(TAG, "onNext: " + task.getDescription());
+                        }
+                    }
 
-            }
+                    @Override
+                    public void onError(Throwable e) {
 
-            @Override
-            public void onNext(Task task) {
-                Log.d(TAG, "onNext: " + task.getDescription());
-            }
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.d(TAG, "onError: ");
-            }
+                    @Override
+                    public void onComplete() {
 
-            @Override
-            public void onComplete() {
-                Log.d(TAG, "onComplete: ");
-            }
-        });
+                    }
+                });
 
     }
 }
