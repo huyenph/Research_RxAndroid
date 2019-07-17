@@ -1,6 +1,7 @@
 package com.utildev.examples.researchrxandroid;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -37,6 +38,8 @@ import okhttp3.ResponseBody;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "aaa";
     private CompositeDisposable disposable = new CompositeDisposable();
+    private SearchView searchView;
+    private long timeSinceLastRequest; // for log printouts only. Not part of logic.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -476,36 +479,87 @@ public class MainActivity extends AppCompatActivity {
 //                });
 
         // Buffer
-        RxView.clicks(findViewById(R.id.btn))
-                .map(new Function<Unit, Integer>() {
+//        RxView.clicks(findViewById(R.id.btn))
+//                .map(new Function<Unit, Integer>() {
+//                    @Override
+//                    public Integer apply(Unit unit) throws Exception {
+//                        return 1;
+//                    }
+//                })
+//                .buffer(4, TimeUnit.SECONDS)
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(new Observer<List<Integer>>() {
+//                    @Override
+//                    public void onSubscribe(Disposable d) {
+//                        disposable.add(d);
+//                    }
+//
+//                    @Override
+//                    public void onNext(List<Integer> integers) {
+//                        Log.d(TAG, "onNext: You clicked " + integers.size() + " times in 4 seconds!");
+//                    }
+//
+//                    @Override
+//                    public void onError(Throwable e) {
+//
+//                    }
+//
+//                    @Override
+//                    public void onComplete() {
+//
+//                    }
+//                });
+
+        searchView = findViewById(R.id.searchView);
+        timeSinceLastRequest = System.currentTimeMillis();
+
+        Observable<String> stringObservable = Observable
+                .create(new ObservableOnSubscribe<String>() {
                     @Override
-                    public Integer apply(Unit unit) throws Exception {
-                        return 1;
+                    public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                        // Listen for text input into the SearchView
+                        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                            @Override
+                            public boolean onQueryTextSubmit(String query) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onQueryTextChange(String newText) {
+                                if (!emitter.isDisposed()) {
+                                    emitter.onNext(newText);
+                                }
+                                return false;
+                            }
+                        });
                     }
                 })
-                .buffer(4, TimeUnit.SECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Integer>>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        disposable.add(d);
-                    }
+                .debounce(1000, TimeUnit.MILLISECONDS)
+                .subscribeOn(Schedulers.io());
 
-                    @Override
-                    public void onNext(List<Integer> integers) {
-                        Log.d(TAG, "onNext: You clicked " + integers.size() + " times in 4 seconds!");
-                    }
+        stringObservable.subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                disposable.add(d);
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
+            @Override
+            public void onNext(String s) {
+                Log.d(TAG, "onNext: time  since last request: " + (System.currentTimeMillis() - timeSinceLastRequest));
+                Log.d(TAG, "onNext: search query: " + s);
+                timeSinceLastRequest = System.currentTimeMillis();
+            }
 
-                    }
+            @Override
+            public void onError(Throwable e) {
+                Log.d(TAG, "onError: ");
+            }
 
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
+            @Override
+            public void onComplete() {
+                Log.d(TAG, "onComplete: ");
+            }
+        });
     }
 
     @Override
