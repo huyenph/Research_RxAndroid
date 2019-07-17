@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.jakewharton.rxbinding3.view.RxView;
+
 import org.reactivestreams.Subscription;
 
 import java.io.IOException;
@@ -24,14 +26,17 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import kotlin.Unit;
 import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "aaa";
+    private CompositeDisposable disposable = new CompositeDisposable();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -321,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+//        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 //        try {
 //            viewModel.makeFutureQuery().get()
 //                    .subscribeOn(Schedulers.io())
@@ -471,24 +476,24 @@ public class MainActivity extends AppCompatActivity {
 //                });
 
         // Buffer
-        Observable<Task> observable = Observable
-                .fromIterable(DataSource.createTaskList())
-                .subscribeOn(Schedulers.io());
-
-        observable.buffer(3)
+        RxView.clicks(findViewById(R.id.btn))
+                .map(new Function<Unit, Integer>() {
+                    @Override
+                    public Integer apply(Unit unit) throws Exception {
+                        return 1;
+                    }
+                })
+                .buffer(4, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Task>>() {
+                .subscribe(new Observer<List<Integer>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
-
+                        disposable.add(d);
                     }
 
                     @Override
-                    public void onNext(List<Task> tasks) {
-                        Log.d(TAG, "onNext: result");
-                        for (Task task : tasks) {
-                            Log.d(TAG, "onNext: " + task.getDescription());
-                        }
+                    public void onNext(List<Integer> integers) {
+                        Log.d(TAG, "onNext: You clicked " + integers.size() + " times in 4 seconds!");
                     }
 
                     @Override
@@ -501,6 +506,11 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        disposable.clear();
     }
 }
