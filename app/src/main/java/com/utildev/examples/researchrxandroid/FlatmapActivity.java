@@ -88,7 +88,7 @@ public class FlatmapActivity extends AppCompatActivity {
                 });
     }
 
-    private void updatePost(Post p) {
+    private void updatePost(final Post p) {
         Observable.fromIterable(adapter.getPosts())
                 .filter(new Predicate<Post>() {
                     @Override
@@ -121,7 +121,7 @@ public class FlatmapActivity extends AppCompatActivity {
                 });
     }
 
-    private Observable<Post> getCommentObservable(Post p) {
+    private Observable<Post> getCommentObservable(final Post p) {
         return ServiceGenerator.getRequestApi().getComment(p.getId())
                 .map(new Function<List<Comment>, Post>() {
                     @Override
