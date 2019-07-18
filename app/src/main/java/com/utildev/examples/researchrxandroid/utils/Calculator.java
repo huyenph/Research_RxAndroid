@@ -1,4 +1,4 @@
-package com.utildev.examples.researchrxandroid;
+package com.utildev.examples.researchrxandroid.utils;
 
 import android.util.Log;
 

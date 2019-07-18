@@ -1,4 +1,6 @@
-package com.utildev.examples.researchrxandroid;
+package com.utildev.examples.researchrxandroid.utils;
+
+import com.utildev.examples.researchrxandroid.RequestApi;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;

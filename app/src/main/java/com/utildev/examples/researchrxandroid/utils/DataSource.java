@@ -1,4 +1,6 @@
-package com.utildev.examples.researchrxandroid;
+package com.utildev.examples.researchrxandroid.utils;
+
+import com.utildev.examples.researchrxandroid.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;

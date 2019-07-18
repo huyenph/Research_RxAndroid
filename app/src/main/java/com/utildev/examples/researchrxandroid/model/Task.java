@@ -1,4 +1,4 @@
-package com.utildev.examples.researchrxandroid;
+package com.utildev.examples.researchrxandroid.model;
 
 public class Task {
     private String description;
