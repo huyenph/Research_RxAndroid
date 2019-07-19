@@ -38,12 +38,12 @@ public class FlatmapActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_flagmap);
+        setContentView(R.layout.activity_flatmap);
         initRecyclerView();
 
         getPostObservable()
                 .subscribeOn(Schedulers.io())
-                .flatMap(new Function<Post, ObservableSource<Post>>() {
+                .concatMap(new Function<Post, ObservableSource<Post>>() {
                     @Override
                     public ObservableSource<Post> apply(Post post) throws Exception {
                         return getCommentObservable(post);
@@ -63,7 +63,7 @@ public class FlatmapActivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Log.d(TAG, "onError: ");
                     }
 
                     @Override
@@ -82,8 +82,7 @@ public class FlatmapActivity extends AppCompatActivity {
                     @Override
                     public ObservableSource<Post> apply(List<Post> posts) throws Exception {
                         adapter.setPosts(posts);
-                        return Observable.fromIterable(posts)
-                                .subscribeOn(Schedulers.io());
+                        return Observable.fromIterable(posts);
                     }
                 });
     }

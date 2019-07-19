@@ -516,7 +516,7 @@ public class MainActivity extends AppCompatActivity {
         Observable<String> stringObservable = Observable
                 .create(new ObservableOnSubscribe<String>() {
                     @Override
-                    public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                    public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
                         // Listen for text input into the SearchView
                         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                             @Override

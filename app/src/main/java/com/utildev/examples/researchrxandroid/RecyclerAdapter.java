@@ -19,6 +19,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
 
     private List<Post> posts = new ArrayList<>();
 
+    private OnPostClickListener onPostClickListener;
+
+    public RecyclerAdapter(OnPostClickListener onPostClickListener) {
+        this.onPostClickListener = onPostClickListener;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -50,7 +56,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return posts;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    public interface OnPostClickListener{
+        void onPostClick(int position);
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title, numComments;
         ProgressBar progressBar;
 
@@ -59,6 +69,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             title = itemView.findViewById(R.id.title);
             numComments = itemView.findViewById(R.id.num_comments);
             progressBar = itemView.findViewById(R.id.progress_bar);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(Post post) {
@@ -79,6 +90,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
             else{
                 progressBar.setVisibility(View.GONE);
             }
+        }
+
+        @Override
+        public void onClick(View v) {
+            onPostClickListener.onPostClick(getAdapterPosition());
         }
     }
 }
