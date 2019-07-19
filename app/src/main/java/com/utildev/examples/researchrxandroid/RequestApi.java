@@ -23,7 +23,10 @@ public interface RequestApi {
     Call<ResponseBody> makeObservableQuery1();
 
     @GET("posts")
-    Observable<List<Post>> getPost();
+    Observable<List<Post>> getPosts();
+
+    @GET("posts/{id}")
+    Observable<Post> getPost(@Path("id") int id);
 
     @GET("posts/{id}/comments")
     Observable<List<Comment>> getComment(@Path("id") int id);

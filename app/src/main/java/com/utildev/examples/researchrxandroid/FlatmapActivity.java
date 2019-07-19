@@ -24,7 +24,7 @@ import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 
-public class FlatmapActivity extends AppCompatActivity {
+public class FlatmapActivity extends AppCompatActivity implements RecyclerAdapter.OnPostClickListener {
     private static final String TAG = "aaa";
 
     //ui
@@ -34,7 +34,6 @@ public class FlatmapActivity extends AppCompatActivity {
     private CompositeDisposable disposables = new CompositeDisposable();
     private RecyclerAdapter adapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,7 +42,7 @@ public class FlatmapActivity extends AppCompatActivity {
 
         getPostObservable()
                 .subscribeOn(Schedulers.io())
-                .concatMap(new Function<Post, ObservableSource<Post>>() {
+                .switchMap(new Function<Post, ObservableSource<Post>>() {
                     @Override
                     public ObservableSource<Post> apply(Post post) throws Exception {
                         return getCommentObservable(post);
@@ -75,7 +74,7 @@ public class FlatmapActivity extends AppCompatActivity {
     }
 
     private Observable<Post> getPostObservable() {
-        return ServiceGenerator.getRequestApi().getPost()
+        return ServiceGenerator.getRequestApi().getPosts()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(new Function<List<Post>, ObservableSource<Post>>() {
@@ -137,9 +136,14 @@ public class FlatmapActivity extends AppCompatActivity {
 
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.rv);
-        adapter = new RecyclerAdapter();
+        adapter = new RecyclerAdapter(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onPostClick(int position) {
+
     }
 
     @Override
@@ -147,4 +151,6 @@ public class FlatmapActivity extends AppCompatActivity {
         super.onDestroy();
         disposables.clear();
     }
+
+
 }
